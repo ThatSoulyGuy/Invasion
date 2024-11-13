@@ -2,17 +2,19 @@
 
 #include <d3d11_4.h>
 #include <DirectXTex/DirectXTex.h>
+#include "ECS/Component.hpp"
 #include "Render/Renderer.hpp"
 #include "Util/IO/AssetPath.hpp"
 #include "Util/IO/FileSystem.hpp"
 #include "Util/Typedefs.hpp"
 
+using namespace Invasion::ECS;
 using namespace Invasion::Util;
 using namespace Invasion::Util::IO;
 
 namespace Invasion::Render
 {
-	class Texture
+	class Texture : public Component
 	{
 		
 	public:

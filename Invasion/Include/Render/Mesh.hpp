@@ -2,17 +2,19 @@
 
 #include <d3d11_4.h>
 #include <dxgi1_6.h>
+#include "ECS/GameObject.hpp"
 #include "Render/Renderer.hpp"
 #include "Render/Shader.hpp"
 #include "Render/Texture.hpp"
 #include "Render/Vertex.hpp"
 #include "Util/Typedefs.hpp"
 
+using namespace Invasion::ECS;
 using namespace Invasion::Util;
 
 namespace Invasion::Render
 {
-	class Mesh
+	class Mesh : public Component
 	{
 
 	public:
@@ -74,11 +76,14 @@ namespace Invasion::Render
 			}
 		}
 
-		void Render()
+		void Render() override
 		{
 			std::shared_lock lock(*mutex);
 
 			ComPtr<ID3D11DeviceContext4> context = Renderer::GetInstance().GetContext();
+
+			Shared<Shader> shader = GetGameObject()->GetComponent<Shader>();
+			Shared<Texture> texture = GetGameObject()->GetComponent<Texture>();
 
 			UINT stride = sizeof(Vertex);
 			UINT offset = 0;
@@ -117,7 +122,7 @@ namespace Invasion::Render
 			return indices;
 		}
 
-		void Uninitialize()
+		void Uninitialize() override
 		{
 			std::unique_lock lock(*mutex);
 
@@ -125,7 +130,7 @@ namespace Invasion::Render
 			indexBuffer.Reset();
 		}
 
-		static Shared<Mesh> Create(const Shared<Shader>& shader, const Shared<Texture>& texture, const MutableArray<Vertex>& vertices, const MutableArray<uint32_t>& indices)
+		static Shared<Mesh> Create(const MutableArray<Vertex>& vertices, const MutableArray<uint32_t>& indices)
 		{
 			Shared<Mesh> result(new Mesh());
 

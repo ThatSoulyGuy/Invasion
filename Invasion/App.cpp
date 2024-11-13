@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "ECS/GameObjectManager.hpp"
 #include "Render/Mesh.hpp"
 #include "Render/Renderer.hpp"
 #include "Render/ShaderManager.hpp"
@@ -42,7 +43,11 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 			D3D11_FLOAT32_MAX
 		}));
 
-		mesh = Mesh::Create(ShaderManager::GetInstance().Get("default"), TextureManager::GetInstance().Get("debug"),
+		mesh = GameObjectManager::GetInstance().Register(GameObject::Create("mesh"));
+
+		mesh->AddComponent(ShaderManager::GetInstance().Get("default"));
+		mesh->AddComponent(TextureManager::GetInstance().Get("debug"));
+		mesh->AddComponent(Mesh::Create(
 		{
 			Vertex{ { -0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f } },
 			Vertex{ {  0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f } },
@@ -52,21 +57,21 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 		{
 			2, 1, 0,
 			0, 3, 2
-		});
+		}));
 
-		mesh->Generate();
+		mesh->GetComponent<Mesh>()->Generate();
 	}
 
 	void Update()
 	{
-
+		GameObjectManager::GetInstance().Update();
 	}
 
 	void Render()
 	{
 		Renderer::GetInstance().Clear({ 0.0f, 0.45f, 0.75f, 1.0f });
 
-		mesh->Render();
+		GameObjectManager::GetInstance().Render();
 
 		Renderer::GetInstance().Present();
 	}
@@ -78,8 +83,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 
 	void Uninitialize()
 	{
-		mesh->Uninitialize();
-
+		GameObjectManager::GetInstance().Uninitialize();
 		ShaderManager::GetInstance().Uninitialize();
 		Renderer::GetInstance().Uninitialize();
 	}
@@ -176,7 +180,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 
 private:
 
-	Shared<Mesh> mesh;
+	Shared<GameObject> mesh;
 
 	bool isRunning = false;
 

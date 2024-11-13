@@ -4,12 +4,14 @@
 #include <d3d11_4.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
+#include "ECS/Component.hpp"
 #include "Render/Renderer.hpp"
 #include "Render/Vertex.hpp"
 #include "Util/IO/AssetPath.hpp"
 #include "Util/IO/FileSystem.hpp"
 #include "Util/Typedefs.hpp"
 
+using namespace Invasion::ECS;
 using namespace Invasion::Util;
 using namespace Invasion::Util::IO;
 
@@ -25,7 +27,7 @@ namespace Invasion::Render
 		COMPUTE	
 	};
 
-	class Shader
+	class Shader : public Component
 	{
 
 	public:
