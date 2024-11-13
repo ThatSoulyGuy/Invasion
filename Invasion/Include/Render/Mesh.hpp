@@ -129,8 +129,6 @@ namespace Invasion::Render
 		{
 			Shared<Mesh> result(new Mesh());
 
-			result->shader = shader;
-			result->texture = texture;
 			result->vertices = vertices;
 			result->indices = indices;
 
@@ -141,8 +139,6 @@ namespace Invasion::Render
 		
 		Mesh() = default;
 
-		Shared<Shader> shader;
-		Shared<Texture> texture;
 		Shared<std::shared_mutex> mutex = std::make_shared<std::shared_mutex>();
 
 		MutableArray<Vertex> vertices;
