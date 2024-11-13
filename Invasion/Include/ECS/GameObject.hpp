@@ -2,6 +2,9 @@
 
 #include <typeindex>
 #include "ECS/Component.hpp"
+#include "Math/Transform.hpp"
+
+using namespace Invasion::Math;
 
 namespace Invasion::ECS
 {
@@ -29,7 +32,7 @@ namespace Invasion::ECS
 		}
 
 		template <typename T>
-		Shared<T> GetComponent()
+		Shared<T> GetComponent() const
 		{
 			static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
@@ -39,7 +42,7 @@ namespace Invasion::ECS
 		}
 
 		template <typename T>
-		bool HasComponent()
+		bool HasComponent() const
 		{
 			static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
@@ -99,6 +102,11 @@ namespace Invasion::ECS
 			return name;
 		}
 
+		Shared<Transform> GetTransform() const
+		{
+			return GetComponent<Transform>();
+		}
+
 		void Uninitialize()
 		{
 			MutableArray<Shared<Component>> componentsCopy;
@@ -123,6 +131,8 @@ namespace Invasion::ECS
 			Shared<GameObject> result(new GameObject());
 
 			result->name = name;
+
+			result->AddComponent(Transform::Create());
 
 			return result;
 		}

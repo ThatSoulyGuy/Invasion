@@ -1,4 +1,10 @@
 
+cbuffer MatrixBuffer : register(b0)
+{
+    //matrix projectionMatrix;
+    //matrix viewMatrix;
+    matrix modelMatrix;
+};
 
 struct VertexData
 {
@@ -21,6 +27,8 @@ PixelData Main(VertexData input)
     PixelData output;
     
     float4 worldPosition = float4(input.position, 1.0f);
+    
+    worldPosition = mul(worldPosition, modelMatrix);
     
     output.position = worldPosition;
     output.color = float4(input.color, 1.0f);

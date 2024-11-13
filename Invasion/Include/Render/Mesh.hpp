@@ -14,6 +14,11 @@ using namespace Invasion::Util;
 
 namespace Invasion::Render
 {
+	struct DefaultMatrixBuffer
+	{
+		DirectX::XMMATRIX modelMatrix;
+	};
+
 	class Mesh : public Component
 	{
 
@@ -84,6 +89,7 @@ namespace Invasion::Render
 
 			Shared<Shader> shader = GetGameObject()->GetComponent<Shader>();
 			Shared<Texture> texture = GetGameObject()->GetComponent<Texture>();
+			Shared<Transform> transform = GetGameObject()->GetComponent<Transform>();
 
 			UINT stride = sizeof(Vertex);
 			UINT offset = 0;
@@ -91,6 +97,8 @@ namespace Invasion::Render
 			context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 			context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 			context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			shader->SetConstantBuffer(SubShaderType::VERTEX, 0, DefaultMatrixBuffer{ Matrix<float, 4, 4>::Transpose(transform->GetModelMatrix()) });
 
 			shader->Bind();
 			texture->Bind();

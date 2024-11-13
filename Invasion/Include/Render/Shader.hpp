@@ -104,6 +104,41 @@ namespace Invasion::Render
 			constantBuffers[{type, slot}] = buffer;
 		}
 
+		template <typename T>
+		void SetConstantBuffer(SubShaderType type, uint32_t slot, const T& data)
+		{
+			ComPtr<ID3D11Device5> device = Renderer::GetInstance().GetDevice();
+			ComPtr<ID3D11DeviceContext4> context = Renderer::GetInstance().GetContext();
+
+			if (!constantBuffers.Contains({ type, slot }))
+			{
+				D3D11_BUFFER_DESC bufferDescription = {};
+
+				bufferDescription.Usage = D3D11_USAGE_DYNAMIC;
+				bufferDescription.ByteWidth = sizeof(T);
+				bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+				bufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+				ComPtr<ID3D11Buffer> buffer;
+
+				D3D11_SUBRESOURCE_DATA subresourceData = {};
+
+				subresourceData.pSysMem = &data;
+
+				device->CreateBuffer(&bufferDescription, &subresourceData, buffer.GetAddressOf());
+
+				constantBuffers[{type, slot}] = buffer;
+			}
+			else
+			{
+				D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+				context->Map(constantBuffers[{type, slot}].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				memcpy(mappedResource.pData, &data, sizeof(T));
+				context->Unmap(constantBuffers[{type, slot}].Get(), 0);
+			}
+		}
+
 		void SetShaderResourceView(SubShaderType type, uint32_t slot, const ComPtr<ID3D11ShaderResourceView>& srv)
 		{
 			ComPtr<ID3D11DeviceContext4> context = Renderer::GetInstance().GetContext();

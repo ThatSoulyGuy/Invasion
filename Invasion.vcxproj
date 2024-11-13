@@ -221,6 +221,8 @@
     <ClInclude Include="Invasion\Include\ECS\Component.hpp" />
     <ClInclude Include="Invasion\Include\ECS\GameObject.hpp" />
     <ClInclude Include="Invasion\Include\ECS\GameObjectManager.hpp" />
+    <ClInclude Include="Invasion\Include\Math\Matrix.hpp" />
+    <ClInclude Include="Invasion\Include\Math\Transform.hpp" />
     <ClInclude Include="Invasion\Include\Math\Vector.hpp" />
     <ClInclude Include="Invasion\Include\Render\Mesh.hpp" />
     <ClInclude Include="Invasion\Include\Render\Renderer.hpp" />

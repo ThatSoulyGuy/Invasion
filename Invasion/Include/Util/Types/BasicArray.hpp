@@ -222,6 +222,13 @@ namespace Invasion::Util::Types
             return data.size();
         }
 
+		bool Contains(const T& value) const
+		{
+			std::shared_lock lock(*mutex);
+
+			return std::find(data.begin(), data.end(), value) != data.end();
+		}
+
         void Resize(size_t size)
         {
             std::unique_lock lock(*mutex);
