@@ -1,0 +1,20 @@
+<XXML=1.0>
+
+GameID="0x00003E91A376E7AB"
+
+[ <Invasion_Default>
+    Version="1.8.2r0"
+    
+    WindowProperties=
+    {
+        Title="Invasion"
+        Dimensions=[750,450]
+    }
+    
+    PlayerProperties=
+    {
+        MouseSensitivity=1.0
+        MaxHealth=100.0
+        IsInvincible=false
+    }
+]

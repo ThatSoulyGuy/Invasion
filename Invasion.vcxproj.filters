@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Invasion\App.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Invasion\Include\Util\Types\BasicString.hpp" />
+    <ClInclude Include="Invasion\Include\Util\Types\BasicArray.hpp" />
+    <ClInclude Include="Invasion\Include\Util\AtomicIterator.hpp" />
+    <ClInclude Include="Invasion\Include\Util\Typedefs.hpp" />
+    <ClInclude Include="Invasion\Include\Util\Types\BasicMap.hpp" />
+    <ClInclude Include="Invasion\Include\Render\Renderer.hpp" />
+    <ClInclude Include="Invasion\Include\Math\Vector.hpp" />
+    <ClInclude Include="Invasion\Include\Render\Mesh.hpp" />
+    <ClInclude Include="Invasion\Include\Render\Vertex.hpp" />
+    <ClInclude Include="Invasion\Include\Util\IO\FileSystem.hpp" />
+    <ClInclude Include="Invasion\Include\Render\Shader.hpp" />
+    <ClInclude Include="Invasion\Include\Util\IO\AssetPath.hpp" />
+    <ClInclude Include="Invasion\Include\Render\ShaderManager.hpp" />
+    <ClInclude Include="Invasion\Include\Util\Types\BasicTuple.hpp" />
+    <ClInclude Include="Invasion\Include\Render\Texture.hpp" />
+    <ClInclude Include="Invasion\Include\Render\TextureManager.hpp" />
+    <ClInclude Include="Invasion\Include\Util\XXML\Lexer.hpp" />
+    <ClInclude Include="Invasion\Include\Util\XXML\Parser.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Invasion\Texture\Debug.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{db9086fe-bacc-4437-8272-1aa6642082db}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PropertySheet.props" />
+    <None Include="packages.config" />
+    <None Include="Assets\Invasion\EngineSettings.xxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\Invasion\Shader\DefaultPixel.hlsl" />
+    <FxCompile Include="Assets\Invasion\Shader\DefaultVertex.hlsl" />
+  </ItemGroup>
+</Project>
