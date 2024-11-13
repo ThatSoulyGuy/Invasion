@@ -13,6 +13,7 @@ using namespace winrt::Windows::ApplicationModel::Core;
 using namespace winrt::Windows::Foundation::Numerics;
 using namespace winrt::Windows::UI;
 using namespace winrt::Windows::UI::Core;
+using namespace winrt::Windows::Graphics::Display;
 
 using namespace Invasion::Render;
 

@@ -7,6 +7,7 @@
 #include "Util/Typedefs.hpp"
 
 using namespace winrt::Windows::UI::Core;
+using namespace winrt::Windows::Graphics::Display;
 
 using namespace Invasion::Math;
 using namespace Invasion::Util;
@@ -129,7 +130,10 @@ namespace Invasion::Render
 
 #endif // _DEBUG
 
-			D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, creationFlags, featureLevels, 1, D3D11_SDK_VERSION, deviceOut.GetAddressOf(), nullptr, contextOut.GetAddressOf());
+			HRESULT result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, creationFlags, featureLevels, 1, D3D11_SDK_VERSION, deviceOut.GetAddressOf(), nullptr, contextOut.GetAddressOf());
+
+			if (FAILED(result))
+				D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT, featureLevels, 1, D3D11_SDK_VERSION, deviceOut.GetAddressOf(), nullptr, contextOut.GetAddressOf());
 
 			deviceOut.As(&device);
 			contextOut.As(&context);
@@ -140,7 +144,10 @@ namespace Invasion::Render
 
 			dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), &dxgiFactory);
 
-			dxgiFactory->CreateSwapChainForCoreWindow(device.Get(), winrt::get_unknown(window), &swapChainDescription, nullptr, swapChain1.GetAddressOf());
+			result = dxgiFactory->CreateSwapChainForCoreWindow(device.Get(), winrt::get_unknown(window), &swapChainDescription, nullptr, swapChain1.GetAddressOf());
+
+			if (FAILED(result))
+				throw std::exception("Failed to create swap chain");
 
 			swapChain1.As(&swapChain);
 		}
@@ -158,14 +165,16 @@ namespace Invasion::Render
 
 		void SetViewport(const Vector<int, 2>& dimensions)
 		{
+			float dpi = DisplayInformation::GetForCurrentView().LogicalDpi() / 96.0f;
+
 			D3D11_VIEWPORT viewport = {};
 
-			viewport.TopLeftX = 0;
-			viewport.TopLeftY = 0;
-			viewport.Width = static_cast<float>(dimensions[0]);
-			viewport.Height = static_cast<float>(dimensions[1]);
-			viewport.MinDepth = 0;
-			viewport.MaxDepth = 1;
+			viewport.TopLeftX = 0.0f;
+			viewport.TopLeftY = 0.0f;
+			viewport.Width = static_cast<float>(dimensions[0] * dpi);
+			viewport.Height = static_cast<float>(dimensions[1] * dpi);
+			viewport.MinDepth = 0.0f;
+			viewport.MaxDepth = 1.0f;
 
 			context->RSSetViewports(1, &viewport);
 		}
