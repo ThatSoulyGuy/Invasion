@@ -29,6 +29,7 @@
     <ClInclude Include="Invasion\Include\ECS\GameObjectManager.hpp" />
     <ClInclude Include="Invasion\Include\Math\Transform.hpp" />
     <ClInclude Include="Invasion\Include\Math\Matrix.hpp" />
+    <ClInclude Include="Invasion\Include\Render\Camera.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">

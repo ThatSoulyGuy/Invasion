@@ -87,6 +87,33 @@ namespace Invasion::Math
             return worldScale;
         }
 
+		Vector<float, 3> GetForward()
+		{
+			UpdateWorldTransform();
+
+			std::shared_lock lock(mutex_);
+
+			return { worldMatrix[2][0], worldMatrix[2][1], worldMatrix[2][2] };
+		}
+
+        Vector<float, 3> GetRight()
+        {
+            UpdateWorldTransform();
+
+            std::shared_lock lock(mutex_);
+
+            return { worldMatrix[0][0], worldMatrix[0][1], worldMatrix[0][2] };
+        }
+
+		Vector<float, 3> GetUp()
+		{
+			UpdateWorldTransform();
+
+			std::shared_lock lock(mutex_);
+
+			return { worldMatrix[1][0], worldMatrix[1][1], worldMatrix[1][2] };
+		}
+
         Matrix<float, 4, 4> GetModelMatrix()
         {
             UpdateWorldTransform();
