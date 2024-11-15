@@ -45,6 +45,12 @@ namespace Invasion::Math
 
         Vector() = default;
 
+		explicit Vector(T scalar)
+		{
+			std::unique_lock lock(*mutex);
+			std::fill(data.begin(), data.end(), scalar);
+		}
+
         Vector(std::initializer_list<T> list) 
         {
             assert(list.size() == N && "Initializer list size must match vector dimensions.");
@@ -157,6 +163,19 @@ namespace Invasion::Math
             return result;
         }
 
+		Vector operator*(const Vector& other) const
+		{
+			std::shared_lock lock(*mutex);
+			std::shared_lock lock_other(*other.mutex);
+
+			Vector result;
+
+			for (size_t i = 0; i < N; ++i)
+				result.data[i] = data[i] * other.data[i];
+
+			return result;
+		}
+
         Vector operator*(T scalar) const 
         {
             std::shared_lock lock(*mutex);
@@ -168,6 +187,19 @@ namespace Invasion::Math
             
             return result;
         }
+
+		Vector operator/(const Vector& other) const
+		{
+			std::shared_lock lock(*mutex);
+			std::shared_lock lock_other(*other.mutex);
+
+			Vector result;
+
+			for (size_t i = 0; i < N; ++i)
+				result.data[i] = data[i] / other.data[i];
+
+			return result;
+		}
 
         Vector operator/(T scalar) const 
         {
@@ -203,6 +235,17 @@ namespace Invasion::Math
             return *this;
         }
 
+        Vector& operator*=(const Vector& other)
+        {
+			std::unique_lock lock(*mutex);
+			std::shared_lock lock_other(*other.mutex);
+
+			for (size_t i = 0; i < N; ++i)
+				data[i] *= other.data[i];
+
+			return *this;
+        }
+
         Vector& operator*=(T scalar) 
         {
             std::unique_lock lock(*mutex);
@@ -212,6 +255,17 @@ namespace Invasion::Math
             
             return *this;
         }
+
+		Vector& operator/=(const Vector& other)
+        {
+			std::unique_lock lock(*mutex);
+			std::shared_lock lock_other(*other.mutex);
+
+			for (size_t i = 0; i < N; ++i)
+				data[i] /= other.data[i];
+
+			return *this;
+		}
 
         Vector& operator/=(T scalar) 
         {

@@ -218,9 +218,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Invasion\Include\Core\InputManager.hpp" />
     <ClInclude Include="Invasion\Include\ECS\Component.hpp" />
     <ClInclude Include="Invasion\Include\ECS\GameObject.hpp" />
     <ClInclude Include="Invasion\Include\ECS\GameObjectManager.hpp" />
+    <ClInclude Include="Invasion\Include\Entity\Entities\EntityPlayer.hpp" />
+    <ClInclude Include="Invasion\Include\Entity\IEntity.hpp" />
     <ClInclude Include="Invasion\Include\Math\Matrix.hpp" />
     <ClInclude Include="Invasion\Include\Math\Transform.hpp" />
     <ClInclude Include="Invasion\Include\Math\Vector.hpp" />
@@ -232,6 +235,7 @@
     <ClInclude Include="Invasion\Include\Render\Texture.hpp" />
     <ClInclude Include="Invasion\Include\Render\TextureManager.hpp" />
     <ClInclude Include="Invasion\Include\Render\Vertex.hpp" />
+    <ClInclude Include="Invasion\Include\Util\Helpers\Builder.hpp" />
     <ClInclude Include="Invasion\Include\Util\IO\AssetPath.hpp" />
     <ClInclude Include="Invasion\Include\Util\AtomicIterator.hpp" />
     <ClInclude Include="Invasion\Include\Util\IO\FileSystem.hpp" />

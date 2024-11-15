@@ -30,7 +30,7 @@ namespace Invasion::Render
 
 		void Uninitialize()
 		{
-			textures.ForEach([](const auto& name, const auto& texture)
+			textures.ForEach([](const Shared<Texture>& texture)
 			{
 				texture->Uninitialize_NoOverride();
 			});

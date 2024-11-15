@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "Core/InputManager.hpp"
 #include "ECS/GameObjectManager.hpp"
 #include "Render/Mesh.hpp"
 #include "Render/Renderer.hpp"
@@ -16,6 +17,7 @@ using namespace winrt::Windows::UI;
 using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::Graphics::Display;
 
+using namespace Invasion::Core;
 using namespace Invasion::Render;
 
 struct App : implements<App, IFrameworkViewSource, IFrameworkView>
@@ -27,6 +29,8 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 	void SetWindow(const CoreWindow& window)
 	{
 		Renderer::GetInstance().Initialize(window);
+
+		InputManager::GetInstance().Initialize(window);
 
 		ShaderManager::GetInstance().Register(Shader::Create("default", { "Shader/Default", "Invasion" }));
 		TextureManager::GetInstance().Register(Texture::Create("debug", { "Texture/Debug.dds", "Invasion"}, 
@@ -64,6 +68,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 
 	void Update()
 	{
+		InputManager::GetInstance().Update();
 		GameObjectManager::GetInstance().Update();
 	}
 
@@ -111,7 +116,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 		}
 	}
 
-	void LoadConfiguration(const CoreWindow& window)
+	void LoadConfiguration(const CoreWindow&)
 	{
 		Shared<XXML::Lexer> lexer = XXML::Lexer::Create(FileSystem::ReadFile(AssetPath{ "EngineSettings.xxml", "Invasion" }.GetFullPath()));
 

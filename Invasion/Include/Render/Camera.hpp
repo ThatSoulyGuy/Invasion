@@ -33,14 +33,24 @@ namespace Invasion::Render
 			return Matrix<float, 4, 4>::LookAt(position, position + forward, up);
 		}
 
-		static Shared<Camera> Create()
+		static Shared<Camera> Create(float fieldOfView, float nearPlane, float farPlane)
 		{
-			return Shared<Camera>(new Camera());
+			Shared<Camera> camera(new Camera());
+
+			camera->fieldOfView = fieldOfView;
+			camera->nearPlane = nearPlane;
+			camera->farPlane = farPlane;
+
+			return camera;
 		}
 
 	private:
 
 		Camera() = default;
+
+		float fieldOfView;
+		float nearPlane;
+		float farPlane;
 
 	};
 }

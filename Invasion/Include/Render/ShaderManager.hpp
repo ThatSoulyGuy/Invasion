@@ -30,7 +30,7 @@ namespace Invasion::Render
 
 		void Uninitialize()
 		{
-			shaders.ForEach([](const auto& name, const auto& shader)
+			shaders.ForEach([](const Shared<Shader>& shader)
 			{
 				shader->Uninitialize_NoOverride();
 			});

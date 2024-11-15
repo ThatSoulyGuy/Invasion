@@ -15,6 +15,33 @@ namespace Invasion::Math
         Transform(const Transform&) = delete;
         Transform& operator=(const Transform&) = delete;
 
+		void Translate(const Vector<float, 3>& translation)
+		{
+			std::unique_lock lock(mutex_);
+
+			localPosition += translation;
+
+			MarkDirty();
+		}
+
+        void Rotate(const Vector<float, 3>& rotation)
+        {
+			std::unique_lock lock(mutex_);
+
+			localRotation += rotation;
+
+			MarkDirty();
+        }
+
+        void Scale(const Vector<float, 3>& scale)
+        {
+            std::unique_lock lock(mutex_);
+
+            localScale *= scale;
+
+            MarkDirty();
+        }
+
         Vector<float, 3> GetLocalPosition() const
         {
             std::shared_lock lock(mutex_);

@@ -13,7 +13,7 @@ namespace Invasion::Util::Types
     struct BasicTuple;
 
     template<std::size_t I, typename... Ts>
-    constexpr auto& Get(class BasicTuple<Ts...>& mp);
+    constexpr auto& Get(struct BasicTuple<Ts...>& mp);
 
     template<std::size_t I, typename T>
     struct BasicTuple_Element

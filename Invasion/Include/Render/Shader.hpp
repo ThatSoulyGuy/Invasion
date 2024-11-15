@@ -237,7 +237,7 @@ namespace Invasion::Render
 			ComPtr<ID3DBlob> geometryShaderBlob;
 			ComPtr<ID3DBlob> computeShaderBlob;
 
-			HRESULT result;
+			HRESULT result = S_OK;
 
 			if (!vertexShader)
 				result = CompileShader<SubShaderType::VERTEX>(vertexShaderPath, "Main", device, vertexShaderBlob);
