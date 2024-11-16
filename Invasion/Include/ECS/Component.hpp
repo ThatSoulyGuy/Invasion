@@ -4,6 +4,11 @@
 
 using namespace Invasion::Util;
 
+namespace Invasion::Render
+{
+	class Camera;
+}
+
 namespace Invasion::ECS
 {
 	class GameObject;
@@ -18,7 +23,7 @@ namespace Invasion::ECS
 
 		virtual void Initialize() { }
 		virtual void Update() { }
-		virtual void Render() { }
+		virtual void Render(const Shared<Invasion::Render::Camera>&) { }
 		virtual void Resize() { }
 		virtual void Uninitialize() { }
 

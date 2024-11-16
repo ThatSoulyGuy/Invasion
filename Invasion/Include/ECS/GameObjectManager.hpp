@@ -47,7 +47,7 @@ namespace Invasion::ECS
 				gameObject->Update();
 		}
 
-		void Render()
+		void Render(const Shared<Invasion::Render::Camera>& camera)
 		{
 			MutableArray<Shared<GameObject>> gameObjectsCopy;
 
@@ -61,7 +61,7 @@ namespace Invasion::ECS
 			}
 
 			for (const auto& gameObject : gameObjectsCopy)
-				gameObject->Render();
+				gameObject->Render(camera);
 		}
 
 		void Unregister(const NarrowString& name)

@@ -21,7 +21,7 @@ namespace Invasion::Render
 		{
 			CoreWindow window = CoreWindow::GetForCurrentThread();
 
-			return Matrix<float, 4, 4>::Projection(DirectX::XMConvertToRadians(45.0f), window.Bounds().Width / window.Bounds().Height, 0.01f, 1000.0f);
+			return Matrix<float, 4, 4>::Projection(DirectX::XMConvertToRadians(fieldOfView), window.Bounds().Width / (float)window.Bounds().Height, nearPlane, farPlane);
 		}
 
 		Matrix<float, 4, 4> GetViewMatrix() const
@@ -48,9 +48,9 @@ namespace Invasion::Render
 
 		Camera() = default;
 
-		float fieldOfView;
-		float nearPlane;
-		float farPlane;
+		float fieldOfView = 0;
+		float nearPlane = 0;
+		float farPlane = 0;
 
 	};
 }

@@ -2,6 +2,7 @@
 
 #include "Core/InputManager.hpp"
 #include "ECS/GameObjectManager.hpp"
+#include "Entity/Entities/EntityPlayer.hpp"
 #include "Render/Mesh.hpp"
 #include "Render/Renderer.hpp"
 #include "Render/ShaderManager.hpp"
@@ -18,6 +19,8 @@ using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::Graphics::Display;
 
 using namespace Invasion::Core;
+using namespace Invasion::Entity;
+using namespace Invasion::Entity::Entities;
 using namespace Invasion::Render;
 
 struct App : implements<App, IFrameworkViewSource, IFrameworkView>
@@ -64,6 +67,10 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 		}));
 
 		mesh->GetComponent<Mesh>()->Generate();
+
+		player = GameObjectManager::GetInstance().Register(GameObject::Create("player"));
+
+		player->AddComponent(IEntity::Create<EntityPlayer>());
 	}
 
 	void Update()
@@ -76,7 +83,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 	{
 		Renderer::GetInstance().Clear({ 0.0f, 0.45f, 0.75f, 1.0f });
 
-		GameObjectManager::GetInstance().Render();
+		GameObjectManager::GetInstance().Render(player->GetChild("camera")->GetComponent<Camera>());
 
 		Renderer::GetInstance().Present();
 	}
@@ -186,6 +193,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 private:
 
 	Shared<GameObject> mesh;
+	Shared<GameObject> player;
 
 	bool isRunning = false;
 

@@ -395,126 +395,120 @@ namespace Invasion::Math
 			return Matrix();
 		}
 
-		static Matrix Projection(T fov, T aspect, T nearPlane, T farPlane) requires(R == 4 && C == 4)
-		{
-			Matrix result;
+        static Matrix Projection(T fov, T aspect, T nearPlane, T farPlane) requires(R == 4 && C == 4)
+        {
+            Matrix result;
+            T tanHalfFov = std::tan(fov / 2);
+            T zRange = farPlane - nearPlane; 
 
-			T tanHalfFov = std::tan(fov / 2);
-			T zRange = nearPlane - farPlane;
+            std::unique_lock lock(result.mutex_);
 
-			std::unique_lock lock(result.mutex_);
+            result.data_[0][0] = 1 / (aspect * tanHalfFov);
+            result.data_[1][1] = 1 / tanHalfFov;
+            result.data_[2][2] = farPlane / zRange;
+            result.data_[2][3] = 1;
+            result.data_[3][2] = -nearPlane * farPlane / zRange;
+            result.data_[3][3] = 0;
 
-			result.data_[0][0] = 1 / (tanHalfFov * aspect);
-			result.data_[1][1] = 1 / tanHalfFov;
-			result.data_[2][2] = (-nearPlane - farPlane) / zRange;
-			result.data_[2][3] = 2 * farPlane * nearPlane / zRange;
-			result.data_[3][2] = 1;
+            return result;
+        }
 
-			return result;
-		}
+        static Matrix Orthographic(T left, T right, T bottom, T top, T nearPlane, T farPlane) requires(R == 4 && C == 4)
+        {
+            Matrix result;
 
-		static Matrix Orthographic(T left, T right, T bottom, T top, T nearPlane, T farPlane) requires(R == 4 && C == 4)
-		{
-			Matrix result;
+            T width = right - left;
+            T height = top - bottom;
+            T depth = farPlane - nearPlane;
 
-			T width = right - left;
-			T height = top - bottom;
-			T depth = farPlane - nearPlane;
+            std::unique_lock lock(result.mutex_);
 
-			std::unique_lock lock(result.mutex_);
+            result.data_[0][0] = 2 / width;
+            result.data_[1][1] = 2 / height;
+            result.data_[2][2] = 1 / depth;
+            result.data_[3][0] = -(right + left) / width;
+            result.data_[3][1] = -(top + bottom) / height;
+            result.data_[3][2] = -nearPlane / depth;
+            result.data_[3][3] = 1;
 
-			result.data_[0][0] = 2 / width;
-			result.data_[1][1] = 2 / height;
-			result.data_[2][2] = -2 / depth;
-			result.data_[3][0] = -(right + left) / width;
-			result.data_[3][1] = -(top + bottom) / height;
-			result.data_[3][2] = -(farPlane + nearPlane) / depth;
-			result.data_[3][3] = 1;
+            return result;
+        }
 
-			return result;
-		}
+        static Matrix LookAt(const Vector<T, 3>& eye, const Vector<T, 3>& target, const Vector<T, 3>& up) requires(R == 4 && C == 4)
+        {
+            Matrix result;
 
-		static Matrix LookAt(const Vector<T, 3>& eye, const Vector<T, 3>& target, const Vector<T, 3>& up) requires(R == 4 && C == 4)
-		{
-			Matrix result;
+            Vector<T, 3> f = (target - eye).Normalize();
+            Vector<T, 3> r = Vector<T, 3>::Cross(up, f).Normalize();
+            Vector<T, 3> u = Vector<T, 3>::Cross(f, r);
 
-			Vector<T, 3> f = (target - eye).Normalize();
-			Vector<T, 3> r = f.Cross(up).Normalize();
-			Vector<T, 3> u = r.Cross(f);
+            std::unique_lock lock(result.mutex_);
 
-			std::unique_lock lock(result.mutex_);
+            result.data_[0][0] = r[0];
+            result.data_[0][1] = r[1];
+            result.data_[0][2] = r[2];
+            result.data_[0][3] = -Vector<T, 3>::Dot(r, eye);
+            result.data_[1][0] = u[0];
+            result.data_[1][1] = u[1];
+            result.data_[1][2] = u[2];
+            result.data_[1][3] = -Vector<T, 3>::Dot(u, eye);
+            result.data_[2][0] = f[0];
+            result.data_[2][1] = f[1];
+            result.data_[2][2] = f[2];
+            result.data_[2][3] = -Vector<T, 3>::Dot(f, eye);
+            result.data_[3][3] = 1;
 
-			result.data_[0][0] = r.x;
-			result.data_[0][1] = r.y;
-			result.data_[0][2] = r.z;
-			result.data_[0][3] = -r.Dot(eye);
-			result.data_[1][0] = u.x;
-			result.data_[1][1] = u.y;
-			result.data_[1][2] = u.z;
-			result.data_[1][3] = -u.Dot(eye);
-			result.data_[2][0] = -f.x;
-			result.data_[2][1] = -f.y;
-			result.data_[2][2] = -f.z;
-			result.data_[2][3] = f.Dot(eye);
-			result.data_[3][0] = 0;
-			result.data_[3][1] = 0;
-			result.data_[3][2] = 0;
-			result.data_[3][3] = 1;
-
-			return result;
-		}
+            return result;
+        }
 
         static Matrix RotationX(T angle) requires(R == 4 && C == 4)
         {
-			Matrix result;
+            Matrix result;
+            T cosTheta = std::cos(angle);
+            T sinTheta = std::sin(angle);
 
-			T cos = std::cos(angle);
-			T sin = std::sin(angle);
+            std::unique_lock lock(result.mutex_);
 
-			std::unique_lock lock(result.mutex_);
+            result.data_[0][0] = 1;
+            result.data_[1][1] = cosTheta;
+            result.data_[1][2] = sinTheta;  
+            result.data_[2][1] = -sinTheta; 
+            result.data_[2][2] = cosTheta;
+            result.data_[3][3] = 1;
 
-			result.data_[0][0] = 1;
-			result.data_[1][1] = cos;
-			result.data_[1][2] = -sin;
-			result.data_[2][1] = sin;
-			result.data_[2][2] = cos;
-			result.data_[3][3] = 1;
-
-			return result;
+            return result;
         }
 
-		static Matrix RotationY(T angle) requires(R == 4 && C == 4)
+        static Matrix RotationY(T angle) requires(R == 4 && C == 4)
         {
-			Matrix result;
+            Matrix result;
+            T cosTheta = std::cos(angle);
+            T sinTheta = std::sin(angle);
 
-			T cos = std::cos(angle);
-			T sin = std::sin(angle);
+            std::unique_lock lock(result.mutex_);
 
-			std::unique_lock lock(result.mutex_);
+            result.data_[0][0] = cosTheta;
+            result.data_[0][2] = -sinTheta;
+            result.data_[1][1] = 1;
+            result.data_[2][0] = sinTheta;
+            result.data_[2][2] = cosTheta;
+            result.data_[3][3] = 1;
 
-			result.data_[0][0] = cos;
-			result.data_[0][2] = sin;
-			result.data_[1][1] = 1;
-			result.data_[2][0] = -sin;
-			result.data_[2][2] = cos;
-			result.data_[3][3] = 1;
-
-			return result;
+            return result;
         }
 
         static Matrix RotationZ(T angle) requires(R == 4 && C == 4)
         {
             Matrix result;
-
-            T cos = std::cos(angle);
-            T sin = std::sin(angle);
+            T cosTheta = std::cos(angle);
+            T sinTheta = std::sin(angle);
 
             std::unique_lock lock(result.mutex_);
 
-            result.data_[0][0] = cos;
-            result.data_[0][1] = -sin;
-            result.data_[1][0] = sin;
-            result.data_[1][1] = cos;
+            result.data_[0][0] = cosTheta;
+            result.data_[0][1] = sinTheta;
+            result.data_[1][0] = -sinTheta;
+            result.data_[1][1] = cosTheta;
             result.data_[2][2] = 1;
             result.data_[3][3] = 1;
 
@@ -538,10 +532,12 @@ namespace Invasion::Math
 			return result;
 		}
 
-		static Matrix EulerRotation(const Vector<T, 3>& angles) requires(R == 4 && C == 4)
-		{
-			return RotationX(angles[0]) * RotationY(angles[1]) * RotationZ(angles[2]);
-		}
+        static Matrix EulerRotation(const Vector<T, 3>& angles) requires(R == 4 && C == 4)
+        {
+            Vector<T, 3> radians = angles * (static_cast<T>(DirectX::XM_PI) / 180.0f);
+
+            return RotationZ(radians[2]) * RotationY(radians[1]) * RotationX(radians[0]);
+        }
 
         static Matrix Scale(const Vector<T, 3>& scale) requires(R == 4 && C == 4)
         {

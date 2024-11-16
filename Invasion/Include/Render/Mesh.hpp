@@ -16,6 +16,8 @@ namespace Invasion::Render
 {
 	struct DefaultMatrixBuffer
 	{
+		DirectX::XMMATRIX projectionMatrix;
+		DirectX::XMMATRIX viewMatrix;
 		DirectX::XMMATRIX modelMatrix;
 	};
 
@@ -81,7 +83,7 @@ namespace Invasion::Render
 			}
 		}
 
-		void Render() override
+		void Render(const Shared<Invasion::Render::Camera>& camera) override
 		{
 			std::shared_lock lock(*mutex);
 
@@ -98,7 +100,12 @@ namespace Invasion::Render
 			context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 			context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			shader->SetConstantBuffer(SubShaderType::VERTEX, 0, DefaultMatrixBuffer{ Matrix<float, 4, 4>::Transpose(transform->GetModelMatrix()) });
+			shader->SetConstantBuffer(SubShaderType::VERTEX, 0, DefaultMatrixBuffer
+			{
+				camera->GetProjectionMatrix(),
+				camera->GetViewMatrix(),
+				transform->GetModelMatrix() 
+			});
 
 			shader->Bind();
 			texture->Bind();

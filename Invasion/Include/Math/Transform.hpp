@@ -11,26 +11,26 @@ namespace Invasion::Math
     {
 
     public:
-        
+            
         Transform(const Transform&) = delete;
         Transform& operator=(const Transform&) = delete;
 
-		void Translate(const Vector<float, 3>& translation)
-		{
-			std::unique_lock lock(mutex_);
+        void Translate(const Vector<float, 3>& translation)
+        {
+            std::unique_lock lock(mutex_);
 
-			localPosition += translation;
+            localPosition += translation;
 
-			MarkDirty();
-		}
+            MarkDirty();
+        }
 
         void Rotate(const Vector<float, 3>& rotation)
         {
-			std::unique_lock lock(mutex_);
+            std::unique_lock lock(mutex_);
 
-			localRotation += rotation;
+            localRotation += rotation;
 
-			MarkDirty();
+            MarkDirty();
         }
 
         void Scale(const Vector<float, 3>& scale)
@@ -114,32 +114,32 @@ namespace Invasion::Math
             return worldScale;
         }
 
-		Vector<float, 3> GetForward()
-		{
-			UpdateWorldTransform();
-
-			std::shared_lock lock(mutex_);
-
-			return { worldMatrix[2][0], worldMatrix[2][1], worldMatrix[2][2] };
-		}
-
         Vector<float, 3> GetRight()
         {
             UpdateWorldTransform();
 
             std::shared_lock lock(mutex_);
-
-            return { worldMatrix[0][0], worldMatrix[0][1], worldMatrix[0][2] };
+                
+            return Vector<float, 3>{ worldMatrix[0][0], worldMatrix[0][1], worldMatrix[0][2] }.Normalize();
         }
 
-		Vector<float, 3> GetUp()
-		{
-			UpdateWorldTransform();
+        Vector<float, 3> GetUp()
+        {
+            UpdateWorldTransform();
 
-			std::shared_lock lock(mutex_);
+            std::shared_lock lock(mutex_);
+                
+            return Vector<float, 3>{ worldMatrix[1][0], worldMatrix[1][1], worldMatrix[1][2] }.Normalize();
+        }
 
-			return { worldMatrix[1][0], worldMatrix[1][1], worldMatrix[1][2] };
-		}
+        Vector<float, 3> GetForward()
+        {
+            UpdateWorldTransform();
+
+            std::shared_lock lock(mutex_);
+                
+            return Vector<float, 3>{ worldMatrix[2][0], worldMatrix[2][1], worldMatrix[2][2] }.Normalize();
+        }
 
         Matrix<float, 4, 4> GetModelMatrix()
         {
@@ -158,12 +158,12 @@ namespace Invasion::Math
             {
                 if (auto currentParent = this->parent.lock())
                     currentParent->RemoveChild(shared_from_this());
-                
+                    
                 this->parent = parent;
 
                 if (parent)
                     parent->AddChild(shared_from_this());
-                
+                    
                 MarkDirty();
             }
         }
@@ -178,6 +178,21 @@ namespace Invasion::Math
         {
             std::shared_lock lock(mutex_);
             return children;
+        }
+            
+        void AddChild(const std::shared_ptr<Transform>& child)
+        {
+            std::unique_lock lock(mutex_);
+
+            children += child;
+        }
+
+        void RemoveChild(const std::shared_ptr<Transform>& child)
+        {
+            std::unique_lock lock(mutex_);
+                
+            if (children.Contains(child))
+                children -= child;
         }
 
         static Shared<Transform> Create()
@@ -203,11 +218,11 @@ namespace Invasion::Math
 
             if (isDirty_)
             {
-                Matrix<float, 4, 4> localMatrix = Matrix<float, 4, 4>::Identity();
+                Matrix<float, 4, 4> translationMatrix = Matrix<float, 4, 4>::Translation(localPosition);
+                Matrix<float, 4, 4> rotationMatrix = Matrix<float, 4, 4>::EulerRotation(localRotation);
+                Matrix<float, 4, 4> scaleMatrix = Matrix<float, 4, 4>::Scale(localScale);
 
-                localMatrix *= Matrix<float, 4, 4>::Scale(localScale);
-                localMatrix *= Matrix<float, 4, 4>::EulerRotation(localRotation);
-                localMatrix *= Matrix<float, 4, 4>::Translation(localPosition);
+                Matrix<float, 4, 4> localMatrix = scaleMatrix * rotationMatrix * translationMatrix;
 
                 if (auto parent = this->parent.lock())
                 {
@@ -218,7 +233,7 @@ namespace Invasion::Math
                     lock.lock();
 
                     std::shared_lock parentLock(parent->mutex_);
-                    
+                        
                     worldMatrix = localMatrix * parent->worldMatrix;
                 }
                 else
@@ -250,20 +265,16 @@ namespace Invasion::Math
                 rotationMatrix[2][i] /= scale[2];
             }
 
-            float sy = std::sqrt(rotationMatrix[0][0] * rotationMatrix[0][0] + rotationMatrix[1][0] * rotationMatrix[1][0]);
+            rotation[1] = std::asin(-matrix[2][0]);
 
-            bool singular = sy < 1e-6;
-
-            if (!singular)
+            if (std::cos(rotation[1]) != 0)
             {
-                rotation[0] = std::atan2(rotationMatrix[2][1], rotationMatrix[2][2]);
-                rotation[1] = std::atan2(-rotationMatrix[2][0], sy);
-                rotation[2] = std::atan2(rotationMatrix[1][0], rotationMatrix[0][0]);
+                rotation[0] = std::atan2(matrix[2][1], matrix[2][2]);
+                rotation[2] = std::atan2(matrix[1][0], matrix[0][0]);
             }
             else
             {
-                rotation[0] = std::atan2(-rotationMatrix[1][2], rotationMatrix[1][1]);
-                rotation[1] = std::atan2(-rotationMatrix[2][0], sy);
+                rotation[0] = std::atan2(-matrix[0][2], matrix[1][1]);
                 rotation[2] = 0;
             }
 
