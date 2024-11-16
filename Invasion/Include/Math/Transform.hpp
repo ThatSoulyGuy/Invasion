@@ -197,21 +197,6 @@ namespace Invasion::Math
                 child->MarkDirty();
         }
 
-        void AddChild(const std::shared_ptr<Transform>& child)
-        {
-            std::unique_lock lock(mutex_);
-
-            children += child;
-        }
-
-        void RemoveChild(const std::shared_ptr<Transform>& child)
-        {
-            std::unique_lock lock(mutex_);
-            
-            if (children.Contains(child))
-                children -= child;
-        }
-
         void UpdateWorldTransform()
         {
             std::unique_lock lock(mutex_);
