@@ -89,9 +89,6 @@ namespace Invasion::Entity::Entities
 			rotation[1] = std::clamp(rotation[1], -89.0f, 89.0f);
 
 			cameraObject->GetTransform()->SetLocalRotation(rotation);
-
-			//OutputDebugString(String("Mouse Delta: ") + "{ " + mouseDelta.x + ", " + mouseDelta.y + " }" + "\n");
-			//OutputDebugString(String("Player Rotation: ") + "{ " + cameraObject->GetTransform()->GetLocalRotation().x + ", " + cameraObject->GetTransform()->GetLocalRotation().y + ", " + cameraObject->GetTransform()->GetLocalRotation().z + " }" + "\n");
 		}
 
 		void UpdateMovement()
@@ -128,8 +125,6 @@ namespace Invasion::Entity::Entities
 			}
 
 			GetGameObject()->GetTransform()->Translate(movement);
-
-			//OutputDebugString(String("Player Movement: ") + "{ " + movement.x + ", " + movement.y + ", " + movement.z + " }" + "\n");
 		}
 
 		BUILDABLE_PROPERTY(MouseSensitivity, float, EntityPlayer)
