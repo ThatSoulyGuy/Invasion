@@ -1,11 +1,11 @@
 #pragma once
 
-#include <type_traits>
+#include <type_traits>x
 #include <string>
 #include "Util/Typedefs.hpp"
 
 #define BUILDABLE_PROPERTY(name, type, container) \
-	type name; \
+	type name = type(); \
 	public: static constexpr auto name##Pointer = &container::name; \
     using name##Setter = Setter<container, type, container::name##Pointer>;
 

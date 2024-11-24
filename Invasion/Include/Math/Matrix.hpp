@@ -398,13 +398,12 @@ namespace Invasion::Math
         static Matrix Projection(T fov, T aspect, T nearPlane, T farPlane) requires(R == 4 && C == 4)
         {
             Matrix result;
-            T tanHalfFov = std::tan(fov / 2);
-            T zRange = farPlane - nearPlane; 
+            T yScale = 1 / std::tan(fov / 2);
+            T xScale = yScale / aspect;
+            T zRange = farPlane - nearPlane;
 
-            std::unique_lock lock(result.mutex_);
-
-            result.data_[0][0] = 1 / (aspect * tanHalfFov);
-            result.data_[1][1] = 1 / tanHalfFov;
+            result.data_[0][0] = xScale;
+            result.data_[1][1] = yScale;
             result.data_[2][2] = farPlane / zRange;
             result.data_[2][3] = 1;
             result.data_[3][2] = -nearPlane * farPlane / zRange;
@@ -436,26 +435,30 @@ namespace Invasion::Math
 
         static Matrix LookAt(const Vector<T, 3>& eye, const Vector<T, 3>& target, const Vector<T, 3>& up) requires(R == 4 && C == 4)
         {
+            Vector<T, 3> zaxis = (target - eye).Normalize();
+            Vector<T, 3> xaxis = Vector<T, 3>::Cross(up, zaxis).Normalize();
+            Vector<T, 3> yaxis = Vector<T, 3>::Cross(zaxis, xaxis);
+
             Matrix result;
 
-            Vector<T, 3> f = (target - eye).Normalize();
-            Vector<T, 3> r = Vector<T, 3>::Cross(up, f).Normalize();
-            Vector<T, 3> u = Vector<T, 3>::Cross(f, r);
+            result.data_[0][0] = xaxis[0];
+            result.data_[0][1] = yaxis[0];
+            result.data_[0][2] = zaxis[0];
+            result.data_[0][3] = 0;
 
-            std::unique_lock lock(result.mutex_);
+            result.data_[1][0] = xaxis[1];
+            result.data_[1][1] = yaxis[1];
+            result.data_[1][2] = zaxis[1];
+            result.data_[1][3] = 0;
 
-            result.data_[0][0] = r[0];
-            result.data_[0][1] = r[1];
-            result.data_[0][2] = r[2];
-            result.data_[0][3] = -Vector<T, 3>::Dot(r, eye);
-            result.data_[1][0] = u[0];
-            result.data_[1][1] = u[1];
-            result.data_[1][2] = u[2];
-            result.data_[1][3] = -Vector<T, 3>::Dot(u, eye);
-            result.data_[2][0] = f[0];
-            result.data_[2][1] = f[1];
-            result.data_[2][2] = f[2];
-            result.data_[2][3] = -Vector<T, 3>::Dot(f, eye);
+            result.data_[2][0] = xaxis[2];
+            result.data_[2][1] = yaxis[2];
+            result.data_[2][2] = zaxis[2];
+            result.data_[2][3] = 0;
+
+            result.data_[3][0] = -Vector<T, 3>::Dot(xaxis, eye);
+            result.data_[3][1] = -Vector<T, 3>::Dot(yaxis, eye);
+            result.data_[3][2] = -Vector<T, 3>::Dot(zaxis, eye);
             result.data_[3][3] = 1;
 
             return result;
@@ -568,20 +571,15 @@ namespace Invasion::Math
 			return result;
 		}
 
-		operator DirectX::XMMATRIX() const
-		{
-			std::shared_lock lock(mutex_);
-
-			DirectX::XMMATRIX result;
-
-			for (size_t i = 0; i < R; ++i)
-			{
-				for (size_t j = 0; j < C; ++j)
-					result.r[i].m128_f32[j] = data_[i][j];
-			}
-
-			return result;
-		}
+        operator DirectX::XMMATRIX() const
+        {
+            return DirectX::XMMATRIX(
+                DirectX::XMVectorSet(data_[0][0], data_[0][1], data_[0][2], data_[0][3]),
+                DirectX::XMVectorSet(data_[1][0], data_[1][1], data_[1][2], data_[1][3]),
+                DirectX::XMVectorSet(data_[2][0], data_[2][1], data_[2][2], data_[2][3]),
+                DirectX::XMVectorSet(data_[3][0], data_[3][1], data_[3][2], data_[3][3])
+            );
+        }
 
     private:
 

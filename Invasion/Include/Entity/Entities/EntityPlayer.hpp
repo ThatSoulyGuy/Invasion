@@ -25,7 +25,7 @@ namespace Invasion::Entity::Entities
 		{
 			Builder<IEntity>::New()
 				.Set(IEntity::RegistryNameSetter{ "entity_player" })
-				.Set(IEntity::DisplayNameSetter{ "Player** Unknwn" })
+				.Set(IEntity::DisplayNameSetter{ "Player" })
 				.Set(IEntity::CurrentHealthSetter{ 100.0f })
 				.Set(IEntity::MaxHealthSetter{ 100.0f })
 				.Set(IEntity::MovementSpeedSetter{ 0.1f })
@@ -35,7 +35,7 @@ namespace Invasion::Entity::Entities
 				.Build(static_cast<IEntity&>(*this));
 
 			Builder<EntityPlayer>::New()
-				.Set(EntityPlayer::MouseSensitivitySetter{ 0.01f })
+				.Set(EntityPlayer::MouseSensitivitySetter{ 0.1f })
 				.Build(static_cast<EntityPlayer&>(*this));
 		}
 
@@ -45,7 +45,7 @@ namespace Invasion::Entity::Entities
 		{
 			IEntity::Initialize();
 
-			//InputManager::GetInstance().SetCursorVisibility(false);
+			InputManager::GetInstance().SetCursorVisibility(false);
 			InputManager::GetInstance().SetCursorCanMove(false);
 
 			cameraObject = GameObject::Create("camera");
@@ -82,8 +82,8 @@ namespace Invasion::Entity::Entities
 
 			Vector<float, 3> rotation = cameraObject->GetTransform()->GetLocalRotation();
 
-			rotation[0] += mouseDelta[0] * MouseSensitivity;
-			rotation[1] += mouseDelta[1] * MouseSensitivity;
+			rotation[0] += mouseDelta[1] * MouseSensitivity;
+			rotation[1] += mouseDelta[0] * MouseSensitivity;
 
 			rotation[0] = std::fmod(rotation[0], 360.0f);
 			rotation[1] = std::clamp(rotation[1], -89.0f, 89.0f);
@@ -93,8 +93,8 @@ namespace Invasion::Entity::Entities
 
 		void UpdateMovement()
 		{
-			Vector<float, 3> forward = GetGameObject()->GetTransform()->GetForward();
-			Vector<float, 3> right = GetGameObject()->GetTransform()->GetRight();
+			Vector<float, 3> forward = cameraObject->GetTransform()->GetForward();
+			Vector<float, 3> right = cameraObject->GetTransform()->GetRight();
 
 			forward = forward.Normalize();
 
